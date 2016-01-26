@@ -288,13 +288,20 @@ static void drawStuff() {
 
   // draw cubes
   // ==========
-  for (int i = 0; i < 2; ++i) {
-    MVM = invEyeTransform * g_objectTransform[i];
-    NMVM = normalMatrix(MVM);
-    sendModelViewNormalMatrix(curSS, MVM, NMVM);
-    safe_glUniform3f(curSS.h_uColor, g_objectColors[i][0], g_objectColors[i][1], g_objectColors[i][2]);
-    g_cube->draw(curSS);
-  }
+  // for (int i = 0; i < 2; ++i) {
+  //   MVM = invEyeTransform * g_objectTransform[i];
+  //   NMVM = normalMatrix(MVM);
+  //   sendModelViewNormalMatrix(curSS, MVM, NMVM);
+  //   safe_glUniform3f(curSS.h_uColor, g_objectColors[i][0], g_objectColors[i][1], g_objectColors[i][2]);
+  //   g_cube->draw(curSS);
+  // }
+
+  MVM = invEyeTransform * g_objectTransform[0];
+  NMVM = normalMatrix(MVM);
+  sendModelViewNormalMatrix(curSS, MVM, NMVM);
+  safe_glUniform3f(curSS.h_uColor, g_objectColors[0][1], g_objectColors[1][2], g_objectColors[2][3]);
+  g_cube->draw(curSS);
+
 }
 
 static void display() {
@@ -347,7 +354,7 @@ static void mouse(const int button, const int state, const int x, const int y) {
 static void keyboard(const unsigned char key, const int x, const int y) {
     switch (key) {
         case 27: // ESC
-            exit(0);  
+            exit(0);
     }
     glutPostRedisplay();
 }
