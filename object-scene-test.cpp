@@ -28,6 +28,9 @@
 using namespace std;
 using namespace tr1;
 
+#define KEY_ESC 27
+#define KEY_SPACE 32
+
 // G L O B A L S ///////////////////////////////////////////////////
 
 // --------- IMPORTANT --------------------------------------------------------
@@ -188,7 +191,12 @@ static const Cvec3 g_light1(2.0, 3.0, 14.0), g_light2(-2, -3.0, -5.0);  // defin
 static Matrix4 g_eyeTransform =
         Matrix4::makeTranslation(Cvec3(0.0, 0.25, 4.0)) ;
 
+// TODO: Maybe find a way to update this variable dyamnically?
 static const int num_objects = 11;
+
+/* This value will be incremented whenever the space key is pressed
+ * It will be used to index into the array of objects */
+static int selected_object = 0;
 
 static Matrix4 g_objectTransform[num_objects] = {
 
@@ -376,15 +384,18 @@ static void mouse(const int button, const int state, const int x, const int y) {
 
 static void keyboard(const unsigned char key, const int x, const int y) {
     switch (key) {
-        case 27: // ESC
+        case KEY_ESC:
             cout << "ESC key pressed, exiting...\n";
             exit(0);
             break;
-        case 37:
-            cout << "Left arrow pressed\n";
-            break;
-        case 39:
-            cout << "Right arrow pressed\n";
+        case KEY_SPACE: // cycle through selected object
+            cout << "Space key pressed\n";
+            if (selected_object == num_objects) {
+              selected_object = 0;
+            } else {
+              selected_object ++;
+            }
+            cout << "The object selected is: " << selected_object << "\n";
             break;
     }
     glutPostRedisplay();
