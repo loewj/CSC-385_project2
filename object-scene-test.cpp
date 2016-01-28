@@ -56,8 +56,8 @@ static const float g_frustFar = -50.0;    // far plane
 static const float g_groundY = -2.0;      // y coordinate of the ground
 static const float g_groundSize = 10.0;   // half the ground length
 
-static int g_windowWidth = 512;
-static int g_windowHeight = 512;
+static int g_windowWidth = 1324;
+static int g_windowHeight = 772;
 static bool g_mouseClickDown = false;    // is the mouse button pressed
 static bool g_mouseLClickButton, g_mouseRClickButton, g_mouseMClickButton;
 static int g_mouseClickX, g_mouseClickY; // coordinates for mouse click event
@@ -188,11 +188,26 @@ static const Cvec3 g_light1(2.0, 3.0, 14.0), g_light2(-2, -3.0, -5.0);  // defin
 static Matrix4 g_eyeTransform =
         Matrix4::makeTranslation(Cvec3(0.0, 0.25, 4.0)) ;
 
-static Matrix4 g_objectTransform[2] = {
-    Matrix4::makeTranslation(Cvec3(-1,0,0)),
+static const int num_objects = 5;
 
-    Matrix4::makeTranslation(Cvec3(1,1,0))
-    * Matrix4::makeScale(Cvec3(0.25,2,0.25))
+static Matrix4 g_objectTransform[num_objects] = {
+
+    // front left leg
+    Matrix4::makeTranslation(Cvec3(-1,-1,0.5))
+    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
+    // front right leg
+    Matrix4::makeTranslation(Cvec3(1,-1,0.5))
+    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
+    // back left leg
+    Matrix4::makeTranslation(Cvec3(-1,-1,-0.5))
+    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
+    // back right leg
+    Matrix4::makeTranslation(Cvec3(1,-1,-0.5))
+    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
+    // seat
+    Matrix4::makeTranslation(Cvec3(1,0,0))
+    * Matrix4::makeScale(Cvec3(1,0.7,1))
+
 };
 static Cvec3f g_objectColors[2] = {Cvec3f(1, 0, 0), Cvec3f(0, 0, 1)};
 
@@ -286,21 +301,25 @@ static void drawStuff() {
   safe_glUniform3f(curSS.h_uColor, 0.1, 0.95, 0.1); // set color
   g_ground->draw(curSS);
 
-  // draw cubes
-  // ==========
-  // for (int i = 0; i < 2; ++i) {
-  //   MVM = invEyeTransform * g_objectTransform[i];
-  //   NMVM = normalMatrix(MVM);
-  //   sendModelViewNormalMatrix(curSS, MVM, NMVM);
-  //   safe_glUniform3f(curSS.h_uColor, g_objectColors[i][0], g_objectColors[i][1], g_objectColors[i][2]);
-  //   g_cube->draw(curSS);
-  // }
+  for (int i = 0; i < num_objects; ++i) {
+    MVM = invEyeTransform * g_objectTransform[i];
+    NMVM = normalMatrix(MVM);
+    sendModelViewNormalMatrix(curSS, MVM, NMVM);
+    safe_glUniform3f(curSS.h_uColor, g_objectColors[0][0], g_objectColors[0][1], g_objectColors[0][2]);
+    g_cube->draw(curSS);
+  }
 
-  MVM = invEyeTransform * g_objectTransform[0];
-  NMVM = normalMatrix(MVM);
-  sendModelViewNormalMatrix(curSS, MVM, NMVM);
-  safe_glUniform3f(curSS.h_uColor, g_objectColors[0][1], g_objectColors[1][2], g_objectColors[2][3]);
-  g_cube->draw(curSS);
+  // MVM = invEyeTransform * g_objectTransform[0];
+  // NMVM = normalMatrix(MVM);
+  // sendModelViewNormalMatrix(curSS, MVM, NMVM);
+  // safe_glUniform3f(curSS.h_uColor, g_objectColors[0][1], g_objectColors[1][2], g_objectColors[2][3]);
+  // g_cube->draw(curSS);
+  //
+  // MVM = invEyeTransform * g_objectTransform[1];
+  // NMVM = normalMatrix(MVM);
+  // sendModelViewNormalMatrix(curSS, MVM, NMVM);
+  // safe_glUniform3f(curSS.h_uColor, g_objectColors[0][1], g_objectColors[1][2], g_objectColors[2][3]);
+  // g_cube->draw(curSS);
 
 }
 
