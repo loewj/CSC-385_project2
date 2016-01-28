@@ -30,6 +30,7 @@ using namespace tr1;
 
 #define KEY_ESC 27
 #define KEY_SPACE 32
+#define KEY_R 82
 
 // G L O B A L S ///////////////////////////////////////////////////
 
@@ -193,6 +194,7 @@ static Matrix4 g_eyeTransform =
 
 // TODO: Maybe find a way to update this variable dyamnically?
 static const int num_objects = 11;
+static Matrix4 selectedMatrix;
 
 /* This value will be incremented whenever the space key is pressed
  * It will be used to index into the array of objects */
@@ -380,9 +382,7 @@ static void mouse(const int button, const int state, const int x, const int y) {
   glutPostRedisplay();
 }
 
-// TODO: Find a way to iterate over the objects in the scene (array)...
-
-static void keyboard(const unsigned char key, const int x, const int y) {
+static void keyboard(int key, int x, int y) {
     switch (key) {
         case KEY_ESC:
             cout << "ESC key pressed, exiting...\n";
@@ -395,7 +395,28 @@ static void keyboard(const unsigned char key, const int x, const int y) {
             } else {
               selected_object ++;
             }
+            selectedMatrix = g_objectTransform[selected_object];
             cout << "The object selected is: " << selected_object << "\n";
+            break;
+        case GLUT_KEY_UP: // pan camera up
+            cout << "Up key pressed\n";
+            g_eyeTransform =
+              g_eyeTransform * Matrix4::makeTranslation(Cvec3(0.0, 0.25, 0));
+            break;
+        case GLUT_KEY_DOWN: // pan camera down
+            cout << "Down key pressed\n";
+            g_eyeTransform =
+              g_eyeTransform * Matrix4::makeTranslation(Cvec3(0.0, -0.25, 0));
+            break;
+        case GLUT_KEY_LEFT: // pan camera left
+            cout << "Left key pressed\n";
+            g_eyeTransform =
+              g_eyeTransform * Matrix4::makeTranslation(Cvec3(-0.25, 0, 0));
+            break;
+        case GLUT_KEY_RIGHT: // pan camera right
+            cout << "Right key pressed\n";
+            g_eyeTransform =
+              g_eyeTransform * Matrix4::makeTranslation(Cvec3(0.25, 0, 0));
             break;
     }
     glutPostRedisplay();
@@ -411,7 +432,7 @@ static void initGlutState(int argc, char * argv[]) {
   glutReshapeFunc(reshape);                               // window reshape callback
   glutMotionFunc(motion);                                 // mouse movement callback
   glutMouseFunc(mouse);                                   // mouse click callback
-  glutKeyboardFunc(keyboard);
+  glutSpecialFunc(keyboard);
 }
 
 static void initGLState() {
