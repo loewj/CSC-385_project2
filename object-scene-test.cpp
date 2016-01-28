@@ -30,7 +30,7 @@ using namespace tr1;
 
 #define KEY_ESC 27
 #define KEY_SPACE 32
-#define KEY_R 82
+#define KEY_R 114
 
 // G L O B A L S ///////////////////////////////////////////////////
 
@@ -382,22 +382,8 @@ static void mouse(const int button, const int state, const int x, const int y) {
   glutPostRedisplay();
 }
 
-static void keyboard(int key, int x, int y) {
+static void special_keyboard(int key, int x, int y) {
     switch (key) {
-        case KEY_ESC:
-            cout << "ESC key pressed, exiting...\n";
-            exit(0);
-            break;
-        case KEY_SPACE: // cycle through selected object
-            cout << "Space key pressed\n";
-            if (selected_object == num_objects) {
-              selected_object = 0;
-            } else {
-              selected_object ++;
-            }
-            selectedMatrix = g_objectTransform[selected_object];
-            cout << "The object selected is: " << selected_object << "\n";
-            break;
         case GLUT_KEY_UP: // pan camera up
             cout << "Up key pressed\n";
             g_eyeTransform =
@@ -422,6 +408,29 @@ static void keyboard(int key, int x, int y) {
     glutPostRedisplay();
 }
 
+void keyboard(unsigned char key, int x, int y) {
+  switch (key) {
+    case KEY_ESC:
+        cout << "ESC key pressed, exiting...\n";
+        exit(0);
+        break;
+    case KEY_SPACE: // cycle through selected object
+        cout << "Space key pressed\n";
+        if (selected_object == num_objects) {
+          selected_object = 0;
+        } else {
+          selected_object ++;
+        }
+        selectedMatrix = g_objectTransform[selected_object];
+        cout << "The object selected is: " << selected_object << "\n";
+        break;
+    case KEY_R:
+        cout << "R key pressed\n";
+        break;
+  }
+  glutPostRedisplay();
+}
+
 static void initGlutState(int argc, char * argv[]) {
   glutInit(&argc, argv);                                  // initialize Glut based on cmd-line args
   glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE|GLUT_DEPTH);  //  RGBA pixel channels and double buffering
@@ -432,7 +441,8 @@ static void initGlutState(int argc, char * argv[]) {
   glutReshapeFunc(reshape);                               // window reshape callback
   glutMotionFunc(motion);                                 // mouse movement callback
   glutMouseFunc(mouse);                                   // mouse click callback
-  glutSpecialFunc(keyboard);
+  glutSpecialFunc(special_keyboard);
+  glutKeyboardFunc(keyboard);
 }
 
 static void initGLState() {
