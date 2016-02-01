@@ -237,7 +237,7 @@ static Matrix4 g_objectTransform[num_objects] = {
     * Matrix4::makeZRotation(.45, .45)
 
 };
-static Cvec3f g_objectColors[2] = {Cvec3f(1, 0, 0), Cvec3f(0, 0, 1)};
+static Cvec3f g_objectColors[num_objects] = {Cvec3f(1, 0, 0), Cvec3f(0, 0, 1)};
 
 ///////////////// END OF G L O B A L S //////////////////////////////////////////////////
 
@@ -422,6 +422,7 @@ void keyboard(unsigned char key, int x, int y) {
           selected_object ++;
         }
         selectedMatrix = g_objectTransform[selected_object];
+        // Now, redraw the selected object
         cout << "The object selected is: " << selected_object << "\n";
         break;
     case KEY_R:
