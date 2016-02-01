@@ -194,11 +194,12 @@ static Matrix4 g_eyeTransform =
 
 // TODO: Maybe find a way to update this variable dyamnically?
 static const int num_objects = 11;
-static Matrix4 selectedMatrix;
+static Matrix4 *selectedMatrix;
 
 /* This value will be incremented whenever the space key is pressed
  * It will be used to index into the array of objects */
 static int selected_object = 0;
+static const Cvec3f selected_color = Cvec3f(0, 1, 0);
 
 static Matrix4 g_objectTransform[num_objects] = {
 
@@ -237,7 +238,19 @@ static Matrix4 g_objectTransform[num_objects] = {
     * Matrix4::makeZRotation(.45, .45)
 
 };
-static Cvec3f g_objectColors[num_objects] = {Cvec3f(1, 0, 0), Cvec3f(0, 0, 1)};
+static Cvec3f g_objectColors[num_objects] = {
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0),
+  Cvec3f(0, 0, 0)
+};
 
 ///////////////// END OF G L O B A L S //////////////////////////////////////////////////
 
@@ -317,7 +330,6 @@ static void drawStuff() {
 
   // draw ground
   // ===========
-  //
   const Matrix4 groundTransform = Matrix4();  // identity
   Matrix4 MVM = invEyeTransform * groundTransform;
   Matrix4 NMVM = normalMatrix(MVM);
@@ -330,7 +342,11 @@ static void drawStuff() {
     MVM = invEyeTransform * g_objectTransform[i];
     NMVM = normalMatrix(MVM);
     sendModelViewNormalMatrix(curSS, MVM, NMVM);
-    safe_glUniform3f(curSS.h_uColor, g_objectColors[0][0], g_objectColors[0][1], g_objectColors[0][2]);
+    if (&g_objectTransform[i] != selectedMatrix) {
+        safe_glUniform3f(curSS.h_uColor, g_objectColors[i][0], g_objectColors[i][1], g_objectColors[i][2]);
+    } else {
+      safe_glUniform3f(curSS.h_uColor, selected_color[0], selected_color[1], selected_color[2]);
+    }
     g_cube->draw(curSS);
   }
 
@@ -415,14 +431,12 @@ void keyboard(unsigned char key, int x, int y) {
         exit(0);
         break;
     case KEY_SPACE: // cycle through selected object
-        cout << "Space key pressed\n";
         if (selected_object == num_objects) {
           selected_object = 0;
         } else {
           selected_object ++;
         }
-        selectedMatrix = g_objectTransform[selected_object];
-        // Now, redraw the selected object
+        selectedMatrix = &g_objectTransform[selected_object];
         cout << "The object selected is: " << selected_object << "\n";
         break;
     case KEY_R:
