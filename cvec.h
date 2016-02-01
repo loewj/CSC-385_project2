@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cassert>
+#include <algorithm>
 
 
 static const double CS175_PI = 3.14159265358979323846264338327950288;

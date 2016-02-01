@@ -10,7 +10,7 @@ class VisObj {
     Matrix4* parent;
 
   public:
-    void setColor(Cvec3f new_color);
+    VisObj(Matrix4 transform, Cvec3f color, Matrix4* parent);
     Cvec3f getColor();
     Matrix4* getParent();
 
