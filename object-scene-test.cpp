@@ -25,6 +25,8 @@
 #include "glsupport.h"
 #include "geometrymaker.h"
 
+#include "visobj.h"
+
 using namespace std;
 using namespace tr1;
 
@@ -239,17 +241,17 @@ static Matrix4 g_objectTransform[num_objects] = {
 
 };
 static Cvec3f g_objectColors[num_objects] = {
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0),
-  Cvec3f(0, 0, 0)
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 0, 0),
+  Cvec3f(1, 1, 1)
 };
 
 ///////////////// END OF G L O B A L S //////////////////////////////////////////////////
@@ -431,7 +433,7 @@ void keyboard(unsigned char key, int x, int y) {
         exit(0);
         break;
     case KEY_SPACE: // cycle through selected object
-        if (selected_object == num_objects) {
+        if (selected_object == num_objects-1) {
           selected_object = 0;
         } else {
           selected_object ++;
