@@ -12,8 +12,8 @@ class VisObj {
   public:
     VisObj(Matrix4 transform, Cvec3f color, Matrix4* parent);
     Cvec3f getColor();
-    Matrix4* getParent();
-
+    Matrix4 getParent();
+    Matrix4 getTransform();
 };
 
 #endif

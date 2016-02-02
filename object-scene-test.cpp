@@ -194,67 +194,30 @@ static const Cvec3 g_light1(2.0, 3.0, 14.0), g_light2(-2, -3.0, -5.0);  // defin
 static Matrix4 g_eyeTransform =
         Matrix4::makeTranslation(Cvec3(0.0, 0.25, 4.0)) ;
 
-// TODO: Maybe find a way to update this variable dyamnically?
-static const int num_objects = 11;
-static Matrix4 *selectedMatrix;
+// A vector to hold all of the new pointers to VisObj instnaces
+static std::vector<VisObj*> v;
+
+static int selected_object = 0;
 
 /* This value will be incremented whenever the space key is pressed
  * It will be used to index into the array of objects */
-static int selected_object = 0;
 static const Cvec3f selected_color = Cvec3f(0, 1, 0);
 
-static Matrix4 g_objectTransform[num_objects] = {
-
-    // front left leg
-    Matrix4::makeTranslation(Cvec3(-1,-1,0.5))
-    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
-
-    Matrix4::makeTranslation(Cvec3(-1,-0.5,0.5))
-    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
-    // front right leg
-    Matrix4::makeTranslation(Cvec3(1,-1,0.5))
-    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
-
-    Matrix4::makeTranslation(Cvec3(1,-0.5,0.5))
-    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
-    // back left leg
-    Matrix4::makeTranslation(Cvec3(-1,-1,-0.5))
-    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
-
-    Matrix4::makeTranslation(Cvec3(-1,-0.5,-0.5))
-    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
-    // back right leg
-    Matrix4::makeTranslation(Cvec3(1,-1,-0.5))
-    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
-
-    Matrix4::makeTranslation(Cvec3(1,-0.5,-0.5))
-    * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
-    // seat
-    Matrix4::makeTranslation(Cvec3(0,-0.1,0))
-    * Matrix4::makeScale(Cvec3(3,0.5,1.5)),
-    // back
-    Matrix4::makeTranslation(Cvec3(0,0.75,-0.5))
-    * Matrix4::makeScale(Cvec3(2,1.5,1.5)),
-    // crest
-    Matrix4::makeTranslation(Cvec3(0,0,0.5))
-    * Matrix4::makeZRotation(.45, .45)
-
-};
-static Cvec3f g_objectColors[num_objects] = {
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 0, 0),
-  Cvec3f(1, 1, 1)
-};
+// Start the slected object matrix equal to the first object in the array
+static VisObj *selectedObj = NULL;
 
 ///////////////// END OF G L O B A L S //////////////////////////////////////////////////
+
+static void initObjects(){
+  // init some objects
+  VisObj *toAdd = new VisObj(
+    Matrix4::makeTranslation(Cvec3(-1,-1,0.5))
+  * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
+  selected_color,
+  NULL);
+  v.push_back(toAdd);
+  selectedObj = v[selected_object];
+}
 
 static void initGround() {
   // A x-z plane at y = g_groundY of dimension [-g_groundSize, g_groundSize]^2
@@ -340,12 +303,12 @@ static void drawStuff() {
   g_ground->draw(curSS);
 
   // draw the chair
-  for (int i = 0; i < num_objects; ++i) {
-    MVM = invEyeTransform * g_objectTransform[i];
+  for (int i = 0; i < v.size(); ++i) {
+    MVM = invEyeTransform * v[i] -> getTransform();
     NMVM = normalMatrix(MVM);
     sendModelViewNormalMatrix(curSS, MVM, NMVM);
-    if (&g_objectTransform[i] != selectedMatrix) {
-        safe_glUniform3f(curSS.h_uColor, g_objectColors[i][0], g_objectColors[i][1], g_objectColors[i][2]);
+    if (v[i] != selectedObj) {
+        safe_glUniform3f(curSS.h_uColor, v[i] -> getColor()[0], v[i] -> getColor()[1], v[i] -> getColor()[2]);
     } else {
       safe_glUniform3f(curSS.h_uColor, selected_color[0], selected_color[1], selected_color[2]);
     }
@@ -433,12 +396,12 @@ void keyboard(unsigned char key, int x, int y) {
         exit(0);
         break;
     case KEY_SPACE: // cycle through selected object
-        if (selected_object == num_objects-1) {
+        if (selected_object == v.size()-1) {
           selected_object = 0;
         } else {
           selected_object ++;
         }
-        selectedMatrix = &g_objectTransform[selected_object];
+        selectedObj = v[selected_object];
         cout << "The object selected is: " << selected_object << "\n";
         break;
     case KEY_R:
@@ -500,7 +463,7 @@ int main(int argc, char * argv[]) {
     initGLState();
     initShaders();
     initGeometry();
-
+    initObjects();
     glutMainLoop();
     return 0;
   }

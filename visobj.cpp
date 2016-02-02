@@ -13,6 +13,10 @@ Cvec3f VisObj::getColor() {
   return color;
 }
 
-Matrix4* VisObj::getParent() {
-  return parent;
+Matrix4 VisObj::getParent() {
+  return *parent;
+}
+
+Matrix4 VisObj::getTransform() {
+  return transform;
 }
