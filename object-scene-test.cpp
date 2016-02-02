@@ -32,7 +32,11 @@ using namespace tr1;
 
 #define KEY_ESC 27
 #define KEY_SPACE 32
-#define KEY_R 114
+#define KEY_R_UPPER 82
+#define KEY_R_LOWER 114
+#define KEY_T_UPPER 84
+#define KEY_T_LOWER 116
+#define KEY_D_LOWER 100
 
 // G L O B A L S ///////////////////////////////////////////////////
 
@@ -225,6 +229,8 @@ static void initObjects(){
 
   v.push_back(toAdd);
 
+  v[1] -> setParent(v[0]);
+
   selectedObj = v[selected_object];
 }
 
@@ -414,10 +420,19 @@ void keyboard(unsigned char key, int x, int y) {
         //selectedObj -> setColor(selected_color);
         cout << "The object selected is: " << selected_object << "\n";
         break;
-    case KEY_R:
+    case KEY_R_UPPER: // Rotate positively
         cout << "R key pressed\n";
         selectedObj -> setTransform(
-          Matrix4::Matrix4::makeZRotation(.45, .45));
+          selectedObj -> getTransform()
+          *Matrix4::makeZRotation(0.5, 0.0));
+        break;
+    case KEY_R_LOWER: // Rotate negatively
+        cout << "r key pressed";
+        // Do the appropriate transform here...
+        break;
+    case KEY_D_LOWER:
+        selectedObj = NULL;
+        selected_object = -1;
         break;
   }
   glutPostRedisplay();

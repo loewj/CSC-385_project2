@@ -6,18 +6,17 @@ class VisObj {
   // Instance variables private by default
   private:
     Matrix4 transform;
-    Matrix4 identity;
     Cvec3f color;
-    Matrix4* parent;
+    VisObj* parent;
 
   public:
-    VisObj(Matrix4 transform, Cvec3f color, Matrix4* parent);
+    VisObj(Matrix4 transform, Cvec3f color, VisObj* parent);
     Cvec3f getColor();
     void setColor(Cvec3f newColor);
-    Matrix4 getParent();
+    VisObj* getParent();
+    void setParent(VisObj* newParent);
     void setTransform(Matrix4 offset);
     Matrix4 getTransform();
-    Matrix4 getIdentity();
 };
 
 #endif
