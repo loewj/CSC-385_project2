@@ -199,9 +199,8 @@ static std::vector<VisObj*> v;
 
 static int selected_object = 0;
 
-/* This value will be incremented whenever the space key is pressed
- * It will be used to index into the array of objects */
 static const Cvec3f selected_color = Cvec3f(0, 1, 0);
+static const Cvec3f default_color = Cvec3f(1, 0, 0);
 
 // Start the slected object matrix equal to the first object in the array
 static VisObj *selectedObj = NULL;
@@ -213,9 +212,19 @@ static void initObjects(){
   VisObj *toAdd = new VisObj(
     Matrix4::makeTranslation(Cvec3(-1,-1,0.5))
   * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
-  selected_color,
+  default_color,
   NULL);
+
   v.push_back(toAdd);
+
+  toAdd = new VisObj(
+    Matrix4::makeTranslation(Cvec3(1,1,0.5))
+  * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
+  default_color,
+  NULL);
+
+  v.push_back(toAdd);
+
   selectedObj = v[selected_object];
 }
 
@@ -363,6 +372,7 @@ static void mouse(const int button, const int state, const int x, const int y) {
   glutPostRedisplay();
 }
 
+// Camera pan with the arrow keys
 static void special_keyboard(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP: // pan camera up
@@ -394,7 +404,6 @@ void keyboard(unsigned char key, int x, int y) {
     case KEY_ESC:
         cout << "ESC key pressed, exiting...\n";
         exit(0);
-        break;
     case KEY_SPACE: // cycle through selected object
         if (selected_object == v.size()-1) {
           selected_object = 0;
@@ -402,10 +411,13 @@ void keyboard(unsigned char key, int x, int y) {
           selected_object ++;
         }
         selectedObj = v[selected_object];
+        //selectedObj -> setColor(selected_color);
         cout << "The object selected is: " << selected_object << "\n";
         break;
     case KEY_R:
         cout << "R key pressed\n";
+        selectedObj -> setTransform(
+          Matrix4::Matrix4::makeZRotation(.45, .45));
         break;
   }
   glutPostRedisplay();
