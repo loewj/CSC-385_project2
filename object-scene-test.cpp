@@ -214,22 +214,18 @@ static VisObj *selectedObj = NULL;
 static void initObjects(){
   // init some objects
   VisObj *toAdd = new VisObj(
-    Matrix4::makeTranslation(Cvec3(-1,-1,0.5))
-  * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
+  Matrix4::makeTranslation(Cvec3(-2,1,0)),
   default_color,
   NULL);
 
   v.push_back(toAdd);
 
-  toAdd = new VisObj(
-    Matrix4::makeTranslation(Cvec3(1,1,0.5))
-  * Matrix4::makeScale(Cvec3(0.5,0.5,0.5)),
+  VisObj *toAdd2 = new VisObj(
+  Matrix4::makeScale(Cvec3(1, 1, 1))
+  * Matrix4::makeTranslation(Cvec3(1, 0, 0)),
   default_color,
-  NULL);
-
-  v.push_back(toAdd);
-
-  v[1] -> setParent(v[0]);
+  toAdd);
+  v.push_back(toAdd2);
 
   selectedObj = v[selected_object];
 }
@@ -422,15 +418,14 @@ void keyboard(unsigned char key, int x, int y) {
         break;
     case KEY_R_UPPER: // Rotate positively
         cout << "R key pressed\n";
-        selectedObj -> setTransform(
-          selectedObj -> getTransform()
-          *Matrix4::makeZRotation(0.5, 0.0));
+        selectedObj -> setTransform(Matrix4::makeZRotation(45));
         break;
     case KEY_R_LOWER: // Rotate negatively
         cout << "r key pressed";
         // Do the appropriate transform here...
         break;
     case KEY_D_LOWER:
+        cout << "Object deselected";
         selectedObj = NULL;
         selected_object = -1;
         break;
