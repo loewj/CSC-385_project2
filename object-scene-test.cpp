@@ -30,6 +30,7 @@
 using namespace std;
 using namespace tr1;
 
+// ASCII key constants for the keyboard listener
 #define KEY_ESC 27
 #define KEY_SPACE 32
 #define KEY_R_UPPER 82
@@ -37,6 +38,12 @@ using namespace tr1;
 #define KEY_T_UPPER 84
 #define KEY_T_LOWER 116
 #define KEY_D_LOWER 100
+#define KEY_C_LOWER 99
+#define KEY_W_LOWER 119
+#define KEY_A_LOWER 97
+#define KEY_S_LOWER 115
+#define KEY_D_LOWER 100
+
 
 // G L O B A L S ///////////////////////////////////////////////////
 
@@ -194,9 +201,11 @@ static shared_ptr<Geometry> g_ground, g_cube, g_sphere;
 
 // --------- Scene
 
+static const Matrix4 default_camera =
+  Matrix4::makeTranslation(Cvec3(0.0, 0.25, 7.0));
+
 static const Cvec3 g_light1(2.0, 3.0, 14.0), g_light2(-2, -3.0, -5.0);  // define two lights positions in world space
-static Matrix4 g_eyeTransform =
-        Matrix4::makeTranslation(Cvec3(0.0, 0.25, 4.0)) ;
+static Matrix4 g_eyeTransform = default_camera;
 
 // A vector to hold all of the new pointers to VisObj instnaces
 static std::vector<VisObj*> v;
@@ -205,6 +214,8 @@ static int selected_object = 0;
 
 static const Cvec3f selected_color = Cvec3f(0, 1, 0);
 static const Cvec3f default_color = Cvec3f(1, 0, 0);
+static const Cvec3f black_color = Cvec3f(0, 0, 0);
+static const Cvec3f white_color = Cvec3f(1, 1, 1);
 
 // Start the slected object matrix equal to the first object in the array
 static VisObj *selectedObj = NULL;
@@ -214,7 +225,7 @@ static VisObj *selectedObj = NULL;
 static void initObjects(){
   // init some objects
   VisObj *toAdd = new VisObj(
-  Matrix4::makeTranslation(Cvec3(-2,1,0)),
+  Matrix4::makeTranslation(Cvec3(0,0.5,0)),
   default_color,
   NULL);
 
@@ -226,6 +237,28 @@ static void initObjects(){
   default_color,
   toAdd);
   v.push_back(toAdd2);
+
+  VisObj *toAdd3 = new VisObj(
+  Matrix4::makeZRotation(45)
+  * Matrix4::makeTranslation(Cvec3(1, -1, 0)),
+  white_color,
+  toAdd);
+  v.push_back(toAdd3);
+
+  VisObj *toAdd4 = new VisObj(
+  Matrix4::makeScale(Cvec3(7, 7, 1))
+  * Matrix4::makeTranslation(Cvec3(0, 0, -1)),
+  black_color,
+  NULL);
+  v.push_back(toAdd4);
+
+  VisObj *toAdd5 = new VisObj(
+  Matrix4::makeScale(Cvec3(1, 1, 1))
+  * Matrix4::makeTranslation(Cvec3(0, 3, -0.7))
+  * Matrix4::makeZRotation(45),
+  default_color,
+  NULL);
+  v.push_back(toAdd5);
 
   selectedObj = v[selected_object];
 }
@@ -380,22 +413,22 @@ static void special_keyboard(int key, int x, int y) {
         case GLUT_KEY_UP: // pan camera up
             cout << "Up key pressed\n";
             g_eyeTransform =
-              g_eyeTransform * Matrix4::makeTranslation(Cvec3(0.0, 0.25, 0));
+              g_eyeTransform * Matrix4::makeXRotation(10);
             break;
         case GLUT_KEY_DOWN: // pan camera down
             cout << "Down key pressed\n";
             g_eyeTransform =
-              g_eyeTransform * Matrix4::makeTranslation(Cvec3(0.0, -0.25, 0));
+              g_eyeTransform * Matrix4::makeXRotation(-10);
             break;
         case GLUT_KEY_LEFT: // pan camera left
             cout << "Left key pressed\n";
             g_eyeTransform =
-              g_eyeTransform * Matrix4::makeTranslation(Cvec3(-0.25, 0, 0));
+              g_eyeTransform * Matrix4::makeYRotation(10);
             break;
         case GLUT_KEY_RIGHT: // pan camera right
             cout << "Right key pressed\n";
             g_eyeTransform =
-              g_eyeTransform * Matrix4::makeTranslation(Cvec3(0.25, 0, 0));
+              g_eyeTransform * Matrix4::makeYRotation(-10);
             break;
     }
     glutPostRedisplay();
@@ -421,13 +454,35 @@ void keyboard(unsigned char key, int x, int y) {
         selectedObj -> setTransform(Matrix4::makeZRotation(45));
         break;
     case KEY_R_LOWER: // Rotate negatively
-        cout << "r key pressed";
-        // Do the appropriate transform here...
+        cout << "r key pressed\n";
+        selectedObj -> setTransform(Matrix4::makeZRotation(-45));
+        break;
+    case KEY_C_LOWER:
+        cout << "Resetting camera...\n";
+        g_eyeTransform = default_camera;
+        break;
+    case KEY_T_UPPER:
+
+        break;
+    case KEY_W_LOWER:
+        cout << "w key pressed\n";
+        g_eyeTransform =
+        g_eyeTransform * Matrix4::makeTranslation(Cvec3(0, 0, -1));
+        break;
+    case KEY_A_LOWER:
+        cout << "a key pressed\n";
+        g_eyeTransform =
+        g_eyeTransform * Matrix4::makeTranslation(Cvec3(-1, 0, 0));
+        break;
+    case KEY_S_LOWER:
+        cout << "w key pressed\n";
+          g_eyeTransform =
+          g_eyeTransform * Matrix4::makeTranslation(Cvec3(0, 0, 1));
         break;
     case KEY_D_LOWER:
-        cout << "Object deselected";
-        selectedObj = NULL;
-        selected_object = -1;
+        cout << "d key pressed\n";
+        g_eyeTransform =
+        g_eyeTransform * Matrix4::makeTranslation(Cvec3(1, 0, 0));
         break;
   }
   glutPostRedisplay();
